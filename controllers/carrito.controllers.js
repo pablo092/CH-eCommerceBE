@@ -1,23 +1,28 @@
-// const { CarritoApi } = require('../model/index');
-// const carritoApi = new CarritoApi();
-
-const Contenedor = require("../config/dummyDB");
+const Contenedor = require("../models/Contenedor");
 const carritoApi = new Contenedor("carritos.txt");
 
-const guardarCarritoController = async (req, res) => {
+const guardarCarrito = (req, res) => {
   try {
-    const cart = await carritoApi.save(req.body);
+    const { productos } = req.body;
+    if (!productos) {
+      return res.status(402).send({ error: "No se han mandado productos" });
+    }
+    const newCart = {
+      timestamp: Date.now(),
+      productos: productos,
+    };
+    const cart = carritoApi.save(newCart);
     return res.status(200).json(cart);
   } catch (error) {
     return res.status(500).send({ error: error });
   }
 };
 
-const eliminarCarritoController = async (req, res) => {
+const eliminarCarrito = (req, res) => {
   try {
-    const cart = await carritoApi.deleteById(req.params.id);
+    const cart = carritoApi.deleteById(+req.params['id']);
     if (!cart) {
-      return res.status(400).send({ error: "Carrito no encontrado" });
+      return res.status(402).send({ error: "Carrito no encontrado" });
     }
     return res.status(200).json(cart);
   } catch (error) {
@@ -25,11 +30,11 @@ const eliminarCarritoController = async (req, res) => {
   }
 };
 
-const listarProductosPorIdCarritoController = async (req, res) => {
+const listarProductosPorIdCarrito = (req, res) => {
   try {
-    const cart = await carritoApi.getById(req.params.id);
+    const cart = carritoApi.getById(+req.params['id']);
     if (!cart) {
-      return res.status(400).send({ error: "Carrito no encontrado" });
+      return res.status(402).send({ error: "Carrito no encontrado" });
     }
     return res.status(200).json(cart.productos);
   } catch (error) {
@@ -37,35 +42,39 @@ const listarProductosPorIdCarritoController = async (req, res) => {
   }
 };
 
-const guardarProductosCarritoPorIdController = async (req, res) => {
+const guardarProductosCarritoPorId = (req, res) => {
   try {
-    const cart = await carritoApi.getById(req.params.id);
+    const cart = carritoApi.getById(+req.params['id']);
     if (!cart) {
-      return res.status(400).send({ error: "Carrito no encontrado" });
+      return res.status(402).send({ error: "Carrito no encontrado" });
     }
-    cart.productos.push(req.body);
-    const cartModified = await carritoApi.updateById(req.params.id, cart);
+    const { productos } = req.body;
+    if (!productos) {
+      return res.status(402).send({ error: "No se han mandado productos" });
+    }
+
+    productos.forEach(p => cart.productos.push(p));
+    const cartModified = carritoApi.deleteById(+req.params['id']);
+    cartModified = carritoApi.save(cart);
     return res.status(200).json(cartModified);
   } catch (error) {
     return res.status(500).send({ error: error });
   }
 };
 
-const eliminarProductoCarritoPorIdController = async (req, res) => {
+const eliminarProductoCarritoPorId = (req, res) => {
   try {
-    const cart = await carritoApi.getById(req.params.id);
+    const cart = carritoApi.getById(+req.params['id']);
     if (!cart) {
-      return res.status(400).send({ error: "Carrito no encontrado" });
+      return res.status(402).send({ error: "Carrito no encontrado" });
     }
     const productToDeleteIndex = cart.productos.findIndex(
-      (product) => product.id === +req.params.id_prod
+      (product) => product.id === +req.params['id_prod']
     );
     if (productToDeleteIndex < 0)
-      return res
-        .status(400)
-        .send({ error: "Producto en el carrito no encontrado" });
+      return res.status(402).send({ error: "Producto en el carrito no encontrado" });
     cart.productos.splice(productToDeleteIndex, 1);
-    const cartModified = await carritoApi.updateById(req.params.id, cart);
+    const cartModified = carritoApi.save(cart);
     return res.status(200).json(cartModified);
   } catch (error) {
     return res.status(500).send({ error: error });
@@ -73,9 +82,9 @@ const eliminarProductoCarritoPorIdController = async (req, res) => {
 };
 
 module.exports = {
-  guardarCarritoController,
-  eliminarCarritoController,
-  listarProductosPorIdCarritoController,
-  guardarProductosCarritoPorIdController,
-  eliminarProductoCarritoPorIdController,
+  guardarCarrito,
+  eliminarCarrito,
+  listarProductosPorIdCarrito,
+  guardarProductosCarritoPorId,
+  eliminarProductoCarritoPorId,
 };

@@ -7,7 +7,11 @@ const PORT = process.env.PORT || 8080;
 // Middlewares
 app.use(express.json());
 
-app.use('/api', apiRoutes );
+app.use('/api', apiRoutes);
+
+app.get('*', function (req, res) {
+  res.status(404).send({ error: -2, descripcion: 'ruta no implementada' });
+})
 
 const connectedServer = app.listen(PORT, async () => {
   console.log(`Server is up and running on port: ${PORT}`);
