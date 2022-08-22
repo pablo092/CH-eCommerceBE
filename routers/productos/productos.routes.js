@@ -1,12 +1,12 @@
-const express = require("express");
-const isAdmin = require("../../middleware/admin/index");
-const {
+import express from "express";
+import isAdmin from "../../middleware/admin/index.js";
+import {
   listarProductos,
   listarProductosPorId,
   guardarProducto,
   actualizarProducto,
   eliminarProducto,
-} = require("../../controllers/productos.controllers");
+} from "../../controllers/productos.controllers.js";
 
 const router = express.Router();
 
@@ -17,4 +17,4 @@ router.post("/", isAdmin, guardarProducto);
 router.put("/:id", isAdmin, actualizarProducto);
 router.delete("/:id", isAdmin, eliminarProducto);
 
-module.exports = router;
+export default router;

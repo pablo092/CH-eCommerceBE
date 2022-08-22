@@ -1,9 +1,8 @@
-const Contenedor = require("../models/Contenedor");
-const productosApi = new Contenedor("productos.txt");
+import ProductosDAO from "../daos/index.js";
 
-const listarProductos = (req, res) => {
+export const listarProductos = (req, res) => {
   try {
-    const productos = productosApi.getAll();
+    const productos = ProductosDAO.getAll();
 
     if (productos) return res.status(200).json(productos);
     return res.status(402).send({ error: "Productos no encontrados" });
@@ -12,9 +11,9 @@ const listarProductos = (req, res) => {
   }
 };
 
-const listarProductosPorId = (req, res) => {
+export const listarProductosPorId = (req, res) => {
   try {
-    const prod = productosApi.getById(+req.params['id']);
+    const prod = ProductosDAO.getById(+req.params['id']);
     if (!prod) {
       return res.status(402).send({ error: "Producto no encontrado" });
     }
@@ -24,7 +23,7 @@ const listarProductosPorId = (req, res) => {
   }
 };
 
-const guardarProducto = (req, res) => {
+export const guardarProducto = (req, res) => {
   try {
     const { nombre, descripcion, codigo, fotoUrl, precio, stock } = req.body;
     if (!nombre || !descripcion || !codigo || !fotoUrl || !precio || !stock) {
@@ -39,16 +38,16 @@ const guardarProducto = (req, res) => {
       precio,
       stock,
     };
-    const prod = productosApi.save(newProduct);
+    const prod = ProductosDAO.save(newProduct);
     return res.status(200).json(prod);
   } catch (error) {
     return res.status(500).send({ error: error });
   }
 };
 
-const actualizarProducto = (req, res) => {
+export const actualizarProducto = (req, res) => {
   try {
-    const productToUpdate = productosApi.getById(+req.params['id']);
+    const productToUpdate = ProductosDAO.getById(+req.params['id']);
     if (!productToUpdate) {
       return res.status(402).send({ error: "Producto no encontrado" });
     }
@@ -63,8 +62,8 @@ const actualizarProducto = (req, res) => {
     productToUpdate.precio = precio;
     productToUpdate.stock = stock;
 
-    const prod = productosApi.deleteById(+req.params['id']);
-    prod = productosApi.save(productToUpdate);
+    const prod = ProductosDAO.deleteById(+req.params['id']);
+    prod = ProductosDAO.save(productToUpdate);
 
     return res.status(200).json(prod);
   } catch (error) {
@@ -72,9 +71,9 @@ const actualizarProducto = (req, res) => {
   }
 };
 
-const eliminarProducto = (req, res) => {
+export const eliminarProducto = (req, res) => {
   try {
-    const prod = productosApi.deleteById(+req.params['id']);
+    const prod = ProductosDAO.deleteById(+req.params['id']);
     if (!prod) {
       return res.status(402).send({ error: "Producto no encontrado" });
     }
@@ -82,12 +81,4 @@ const eliminarProducto = (req, res) => {
   } catch (error) {
     return res.status(500).send({ error: error });
   }
-};
-
-module.exports = {
-  listarProductos,
-  listarProductosPorId,
-  guardarProducto,
-  actualizarProducto,
-  eliminarProducto,
 };

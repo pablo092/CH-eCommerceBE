@@ -1,7 +1,6 @@
-const Contenedor = require("../models/Contenedor");
-const carritoApi = new Contenedor("carritos.txt");
+import CarritosDAO from "../daos/index.js";
 
-const guardarCarrito = (req, res) => {
+export const guardarCarrito = (req, res) => {
   try {
     const { productos } = req.body;
     if (!productos) {
@@ -11,16 +10,16 @@ const guardarCarrito = (req, res) => {
       timestamp: Date.now(),
       productos: productos,
     };
-    const cart = carritoApi.save(newCart);
+    const cart = CarritosDAO.save(newCart);
     return res.status(200).json(cart);
   } catch (error) {
     return res.status(500).send({ error: error });
   }
 };
 
-const eliminarCarrito = (req, res) => {
+export const eliminarCarrito = (req, res) => {
   try {
-    const cart = carritoApi.deleteById(+req.params['id']);
+    const cart = CarritosDAO.deleteById(+req.params['id']);
     if (!cart) {
       return res.status(402).send({ error: "Carrito no encontrado" });
     }
@@ -30,9 +29,9 @@ const eliminarCarrito = (req, res) => {
   }
 };
 
-const listarProductosPorIdCarrito = (req, res) => {
+export const listarProductosPorIdCarrito = (req, res) => {
   try {
-    const cart = carritoApi.getById(+req.params['id']);
+    const cart = CarritosDAO.getById(+req.params['id']);
     if (!cart) {
       return res.status(402).send({ error: "Carrito no encontrado" });
     }
@@ -42,9 +41,9 @@ const listarProductosPorIdCarrito = (req, res) => {
   }
 };
 
-const guardarProductosCarritoPorId = (req, res) => {
+export const guardarProductosCarritoPorId = (req, res) => {
   try {
-    const cart = carritoApi.getById(+req.params['id']);
+    const cart = CarritosDAO.getById(+req.params['id']);
     if (!cart) {
       return res.status(402).send({ error: "Carrito no encontrado" });
     }
@@ -54,17 +53,17 @@ const guardarProductosCarritoPorId = (req, res) => {
     }
 
     productos.forEach(p => cart.productos.push(p));
-    const cartModified = carritoApi.deleteById(+req.params['id']);
-    cartModified = carritoApi.save(cart);
+    const cartModified = CarritosDAO.deleteById(+req.params['id']);
+    cartModified = CarritosDAO.save(cart);
     return res.status(200).json(cartModified);
   } catch (error) {
     return res.status(500).send({ error: error });
   }
 };
 
-const eliminarProductoCarritoPorId = (req, res) => {
+export const eliminarProductoCarritoPorId = (req, res) => {
   try {
-    const cart = carritoApi.getById(+req.params['id']);
+    const cart = CarritosDAO.getById(+req.params['id']);
     if (!cart) {
       return res.status(402).send({ error: "Carrito no encontrado" });
     }
@@ -74,17 +73,9 @@ const eliminarProductoCarritoPorId = (req, res) => {
     if (productToDeleteIndex < 0)
       return res.status(402).send({ error: "Producto en el carrito no encontrado" });
     cart.productos.splice(productToDeleteIndex, 1);
-    const cartModified = carritoApi.save(cart);
+    const cartModified = CarritosDAO.save(cart);
     return res.status(200).json(cartModified);
   } catch (error) {
     return res.status(500).send({ error: error });
   }
-};
-
-module.exports = {
-  guardarCarrito,
-  eliminarCarrito,
-  listarProductosPorIdCarrito,
-  guardarProductosCarritoPorId,
-  eliminarProductoCarritoPorId,
 };

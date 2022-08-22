@@ -1,4 +1,4 @@
-"use strict";
+("use strict");
 
 const fs = require("fs");
 
@@ -8,7 +8,7 @@ function jsonReader(file) {
   return objects;
 }
 
-class Contenedor {
+class ContenedorArchivo {
   constructor(nombreArchivo) {
     this.nombreArchivo = nombreArchivo;
     fs.openSync(`${nombreArchivo}`, "w");
@@ -72,4 +72,4 @@ class Contenedor {
   }
 }
 
-module.exports = Contenedor;
+export default ContenedorArchivo;
