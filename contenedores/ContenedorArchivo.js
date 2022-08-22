@@ -62,13 +62,26 @@ class ContenedorArchivo {
 
     console.log(`Se elimino correctamente el objeto con id: ${id}`);
     console.log("deleteById", found);
-    return found ? found : null;
+    return found ? found : { error: `Elemento con id ${id} no encontrado!` };
   }
 
   // Elimina todos los objetos presentes en el archivo.
   deleteAll() {
     fs.writeFileSync(`${this.nombreArchivo}`, "[]");
     console.log("Se elimino todo el contenido del archivo");
+  }
+
+  updateById(id, object) {
+    let objects = jsonReader(this.nombreArchivo);
+    let found = objects.find((element) => element.id === id);
+    found = object;
+    const filtered = objects.filter((element) => element.id !== id);
+    filtered.push(found);
+    fs.writeFileSync(`${this.nombreArchivo}`, JSON.stringify(filtered));
+
+    console.log(`Se actualizo correctamente el objeto con id: ${id}`);
+    console.log("updateById", found);
+    return found ? found : { error: `Elemento con id ${id} no encontrado!` };
   }
 }
 

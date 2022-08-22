@@ -10,12 +10,16 @@ class ContenedorMemoria {
   }
 
   getById(id) {
-    return this.list.find((element) => element.id === +id) || { error: `Elemento con id ${id} no encontrado!` };
+    return (
+      this.list.find((element) => element.id === +id) || {
+        error: `Elemento con id ${id} no encontrado!`,
+      }
+    );
   }
 
   save(element) {
     const newElement = {
-        ...element,
+      ...element,
       id: ++ContenedorMemoria.idCount,
       timestamp: Date.now(),
     };
@@ -25,15 +29,23 @@ class ContenedorMemoria {
 
   updateById(id, element) {
     const elementIndex = this.list.findIndex((elem) => elem.id === +id);
-    if (elementIndex < 0) return { error: `Elemento con id ${id} no encontrado!` };
-    this.list[elementIndex] = { id: +id, timestamp: Date.now(),...element };
+    if (elementIndex < 0)
+      return { error: `Elemento con id ${id} no encontrado!` };
+    this.list[elementIndex] = { id: +id, timestamp: Date.now(), ...element };
     return this.list[elementIndex];
   }
 
   deleteById(id) {
     const elementIndex = this.list.findIndex((element) => element.id === +id);
-    if (elementIndex < 0) return { error: `Elemento con id ${id} no encontrado!` };
+    if (elementIndex < 0)
+      return { error: `Elemento con id ${id} no encontrado!` };
     return this.list.splice(elementIndex, 1);
+  }
+
+  // Elimina todos los objetos presentes en el archivo.
+  deleteAll() {
+    this.list = [];
+    console.log("Se elimino todo el contenido");
   }
 }
 
